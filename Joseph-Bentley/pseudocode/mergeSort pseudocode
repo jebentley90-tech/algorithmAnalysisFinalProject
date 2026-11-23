@@ -1,0 +1,23 @@
+function mergeSort(arr):
+	if length(arr) <= 1 then
+ 		return
+ 	end if
+ 	midpoint <-- length(array) / 2
+ 	leftHalf <-- array[0 to midpoint]
+ 	rightHalf <-- array[midpoint to end]
+ 	
+ 	mergeSort(leftHalf)
+ 	mergeSort(rightHalf)
+
+ 	i, j, k <-- 0
+ 	while i < length(leftHalf) and j < length(rightHalf)
+ 		if leftHalf[i] < rightHalf[j] then
+ 			arr[k] = laftHalf[i]
+ 			i <-- i + 1
+ 		else
+ 			arr[k] = rightHalf[j]
+ 			j <-- j + 1
+ 		end if
+ 		k <-- k + 1
+ 	end while
+end function
