@@ -1,0 +1,14 @@
+function countingSort(arr, min, max):
+ 	n <-- length(arr)
+	count <-- array of size max – min + 1, initialized to 0
+	
+	for each number in arr:
+		count[number – min] += 1
+
+	z <-- 0
+	for i from min to max:
+		while count[i – min] > 0:
+			array[z] <-- i
+			z += 1
+			count[i – min] -= 1
+end function
