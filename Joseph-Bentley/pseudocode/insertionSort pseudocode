@@ -1,0 +1,12 @@
+function insertionSort(arr):
+	n <-- length(arr)		// Get number of elements in arr
+	for i from 1 to n-1:	// Start from second element
+		key = arr[i]	// Store the current element
+		j <-- i – 1		// Initialize position for comparison
+		// Move elements of arr[0..i-1] that are greater than key to one position ahead
+		while j > 0 and arr[j] > key:	// Second comparison keeps sort stable, do not use >=
+			arr[j + 1] <-- arr[j]	// Shift elements to the right
+			j <-- j – 1			// Move to next element to the left
+		arr[j + 1 ] <-- key		// Insert the key into its correct position
+	end for
+end function
