@@ -1,0 +1,213 @@
+Decrease-and-conquer
+Insertion sort pseudocode
+function insertionSort(arr):
+	n  length(arr)		// Get number of elements in arr
+	for i from 1 to n-1:	// Start from second element
+		key = arr[i]	// Store the current element
+		j  i – 1		// Initialize position for comparison
+		// Move elements of arr[0..i-1] that are greater than key to one position ahead
+		while j > 0 and arr[j] < key:	// Second comparison keeps sort stable, not =>
+			arr[j + 1]  arr[j]	// Shift elements to the right
+			j  j – 1			// Move to next element to the left
+		arr[j + 1 ]  key		// Insert the key into its correct position
+	end for
+end function
+
+Algorithm inserts checking from the right to the left into the sorted part of the array.
+Time Complexity
+Best case: O(n)	-Just one time through the array, occurs when array is already sorted
+Worst case: O(n2)	-Occurs when the array is sorted in reverse order, maximum number 
+ 			  of times through the for and while loop
+Average case: O(n2)	-Each element requires shifting about half of previous elements, and 
+ 			  the inner loop runs about halfway through the sorted portion
+Space Complexity
+O(1)			-Constant space complexity, requires a single additional variable
+
+Insertion sort is stable due to the inner loop checking if arr[j] > key, not equal to the key. Since it is shifting from the right, a key that is equal to j causes the loop to end and the key is inserted to the right of the element at j, keeping the relative order of elements that are equal.
+1st test, with harness:
+flights_n000015_schedule.csv       insertion  PASS                -              -     0.000
+flights_n001000_schedule.csv       insertion  PASS                -              -     0.087
+flights_n010000_schedule.csv       insertion  PASS                -              -     4.352
+flights_n010000_nearly_sorted.csv  insertion  PASS           -              -     0.175
+flights_n010000_reversed.csv       insertion  PASS                 -              -     8.273
+flights_n100000_nearly_sorted.csv  insertion  PASS           -              -    10.688
+
+Insertion sort performs exceptionally well on nearly sorted data (0.175 seconds). It performs average and randomly sorted data (4.352 seconds). And lastly, the worst case is when data is sorted in reverse (8.273 seconds).
+
+
+Transform-and-conquer
+Heapsort pseudocode
+//Uses 0-based indexing
+function heapify(arr, n, i):
+	largest  i
+	left  2*i + 1
+	right  2*i + 2
+	if left < n and arr[left] > arr[largest] then
+		largest  left
+	end if
+	if right < n and arr[right] < arr[largest] then
+		largest  right
+	end if
+	if largest ≠ i then
+		swap(arr[i], arr[largest]
+		heapify(arr, n, largest)
+	end if
+end function
+function heapsort(arr):
+	n  length(arr)
+	//Build max heap
+	for i  floor(n/2) - 1 downto 0 do
+		heapify(arr, n, i)
+	end for
+	// Extract elements one by one
+	for i  n - 1 downto 0 do
+		swap(arr[0], arr[i])
+		heapify(arr, i, 0)
+	end for
+end function
+Heapsort is not stable, so additional work must be done to reorder equal elements into the correct relative order. Heapsort will freely swap equal elements while building and restoring the heap. Comparing and sorting equal elements according to their initial position in the data will overcome this obstacle to stability.
+Best/Worst/Average Case: O(n log n)
+Space Complexity: O(1)
+
+Ordinary heapsort will most likely return an order that is not stable. My fix was to implement tie-breaking using the original index where I store each record as:
+(id, delay, original_index)
+Whenever a tie occurs, the original index is used to place the tying elements in ascending order.
+
+1st test with harness:
+flights_n000015_schedule.csv       heap       PASS               -              -     0.000
+flights_n001000_schedule.csv       heap       PASS               -              -     0.004
+flights_n010000_schedule.csv       heap       PASS               -              -     0.060
+flights_n010000_nearly_sorted.csv  heap       PASS           -              -     0.055
+flights_n010000_reversed.csv       heap       PASS                -              -     0.059
+flights_n100000_schedule.csv       heap       PASS               -              -     0.905
+flights_n100000_nearly_sorted.csv  heap       PASS           -              -     0.900
+
+Divide-and-conquer
+Mergesort pseudocode
+function mergeSort(arr):
+	if length(arr) <= 1 then
+ 		return
+ 	end if
+ 	midpoint = length(array) / 2
+ 	leftHalf = array[0 to midpoint]
+ 	rightHalf = array[midpoint to end]
+ 	
+ 	mergeSort(leftHalf)
+ 	mergeSort(rightHalf)
+
+ 	i, j, k  0
+ 	while i < length(leftHalf) and j < length(rightHalf)
+ 		if leftHalf[i] < rightHalf[j] then
+ 			arr[k] = laftHalf[i]
+ 			i = i + 1
+ 		else
+ 			arr[k] = rightHalf[j]
+ 			j = j + 1
+ 		end if
+ 		k = k + 1
+ 	end while
+end function
+Time Complexity
+Best/Worst/Average Case: O(n log n)
+Space Complexity 
+O(n)
+Merge sort is stable. Relative position of equal elements is preserved.
+1st test, with harness:
+flights_n000015_schedule.csv       merge      PASS                -              -     0.000
+flights_n001000_schedule.csv       merge      PASS                -              -     0.002
+flights_n010000_schedule.csv       merge      PASS                -              -     0.026
+flights_n010000_nearly_sorted.csv  merge      PASS            -              -     0.022
+flights_n010000_reversed.csv       merge      PASS                  -              -     0.019
+flights_n100000_schedule.csv       merge      PASS                 -              -     0.354
+flights_n100000_nearly_sorted.csv  merge      PASS            -              -     0.288
+
+Space-time Trade-off
+Counting sort pseudocode
+function countingSort(arr, min, max):
+ 	n = length(arr)
+	count = array of size max – min + 1, initialized to 0
+	
+	for each number in arr:
+		count[number – min] += 1
+
+	z = 0
+	for i from min to max:
+		while count[i – min] > 0:
+			array[z] = i
+			z += 1
+			count[i – min] -= 1
+end function
+//Must keep in mind that the delays can be as low as -60, so compensate (used buckets)
+
+Time complexity
+Best case: k is small compared to n, then O(n)
+Worst case: O(n + k) ≈ O(n2) where k is very large compared to n
+Average case: O(n +k) where k is not excessively larger than n
+Space complexity
+O(n + k) given that k = 961 in this case (k is therefore negligible)
+1st Test, with harness:
+flights_n000015_schedule.csv       counting   PASS                -              -     0.000
+flights_n001000_schedule.csv       counting   PASS                -              -     0.000
+flights_n010000_schedule.csv       counting   PASS                -              -     0.003
+flights_n010000_nearly_sorted.csv  counting   PASS           -              -     0.002
+flights_n010000_reversed.csv       counting   PASS                 -              -     0.002
+flights_n100000_schedule.csv       counting   PASS                -              -     0.043
+flights_n100000_nearly_sorted.csv  counting   PASS           -              -     0.025
+
+Counting sort is only efficient when the key range is reasonably small compared to n. Anything of a larger nature (such as a 64-bit timestamp) would make the counting array prohibitively large and therefore ineffective.
+
+
+
+
+
+
+
+
+Insertion Sort Statistics 
+{'algorithm': 'insertion', 'dataset': 'flights_n000015_schedule.csv', 'median_time': 2.010003663599491e-05, 'comparisons': 140, 'moves': 78, 'peak_memory': 304}
+{'algorithm': 'insertion', 'dataset': 'flights_n001000_schedule.csv', 'median_time': 1.117793699959293, 'comparisons': 519835, 'moves': 260420, 'peak_memory': 17804}
+{'algorithm': 'insertion', 'dataset': 'flights_n010000_nearly_sorted.csv', 'median_time': 3.19632270000875, 'comparisons': 1311839, 'moves': 660919, 'peak_memory': 618444}
+{'algorithm': 'insertion', 'dataset': 'flights_n010000_reversed.csv', 'median_time': 234.67203829996288, 'comparisons': 98012348, 'moves': 49011321, 'peak_memory': 618412}
+{'algorithm': 'insertion', 'dataset': 'flights_n010000_schedule.csv', 'median_time': 127.33701439993456, 'comparisons': 52181853, 'moves': 26095931, 'peak_memory': 618444}
+{'algorithm': 'insertion', 'dataset': 'flights_n100000_nearly_sorted.csv', 'median_time': 297.19981179991737, 'comparisons': 122632543, 'moves': 61366271, 'peak_memory': 7090084}
+
+
+Merge sort statistics
+{'algorithm': 'merge', 'dataset': 'flights_n000015_schedule.csv', 'median_time': 5.450006574392319e-05, 'comparisons': 41, 'moves': 18, 'peak_memory': 680}
+{'algorithm': 'merge', 'dataset': 'flights_n001000_schedule.csv', 'median_time': 0.016188899986445904, 'comparisons': 8688, 'moves': 1288, 'peak_memory': 26744}
+{'algorithm': 'merge', 'dataset': 'flights_n010000_nearly_sorted.csv', 'median_time': 0.340511699905619, 'comparisons': 97113, 'moves': 36503, 'peak_memory': 703704}
+{'algorithm': 'merge', 'dataset': 'flights_n010000_reversed.csv', 'median_time': 0.34142369986511767, 'comparisons': 75367, 'moves': 58249, 'peak_memory': 703704}
+{'algorithm': 'merge', 'dataset': 'flights_n010000_schedule.csv', 'median_time': 0.3310124999843538, 'comparisons': 120424, 'moves': 13192, 'peak_memory': 703704}
+{'algorithm': 'merge', 'dataset': 'flights_n100000_nearly_sorted.csv', 'median_time': 4.7929711998440325, 'comparisons': 1303762, 'moves': 365166, 'peak_memory': 8016112}
+{'algorithm': 'merge', 'dataset': 'flights_n100000_schedule.csv', 'median_time': 4.721088099991903, 'comparisons': 1535665, 'moves': 133263, 'peak_memory': 8016112}
+
+
+
+
+Heap sort statistics
+{'algorithm': 'heap', 'dataset': 'flights_n000015_schedule.csv', 'median_time': 0.00013830000534653664, 'comparisons': 72, 'moves': 150, 'peak_memory': 1208}
+{'algorithm': 'heap', 'dataset': 'flights_n001000_schedule.csv', 'median_time': 0.04445519996806979, 'comparisons': 16843, 'moves': 27234, 'peak_memory': 41764}
+{'algorithm': 'heap', 'dataset': 'flights_n010000_nearly_sorted.csv', 'median_time': 0.6313877999782562, 'comparisons': 226639, 'moves': 350397, 'peak_memory': 994404}
+{'algorithm': 'heap', 'dataset': 'flights_n010000_reversed.csv', 'median_time': 0.6956601999700069, 'comparisons': 237644, 'moves': 381015, 'peak_memory': 994404}
+{'algorithm': 'heap', 'dataset': 'flights_n010000_schedule.csv', 'median_time': 0.6905607001390308, 'comparisons': 235487, 'moves': 373029, 'peak_memory': 994404}
+{'algorithm': 'heap', 'dataset': 'flights_n100000_nearly_sorted.csv', 'median_time': 8.908909799996763, 'comparisons': 2924322, 'moves': 4490637, 'peak_memory': 11066044}
+{'algorithm': 'heap', 'dataset': 'flights_n100000_schedule.csv', 'median_time': 9.330569499870762, 'comparisons': 3019261, 'moves': 4722312, 'peak_memory': 11066044}
+
+
+Counting sort statistics
+{'algorithm': 'counting', 'dataset': 'flights_n000015_schedule.csv', 'median_time': 0.0015779000241309404, 'comparisons': 0, 'moves': 30, 'peak_memory': 58032}
+{'algorithm': 'counting', 'dataset': 'flights_n001000_schedule.csv', 'median_time': 0.0039437999948859215, 'comparisons': 0, 'moves': 2000, 'peak_memory': 85104}
+{'algorithm': 'counting', 'dataset': 'flights_n010000_nearly_sorted.csv', 'median_time': 0.024710199795663357, 'comparisons': 0, 'moves': 20000, 'peak_memory': 766384}
+{'algorithm': 'counting', 'dataset': 'flights_n010000_reversed.csv', 'median_time': 0.024681800045073032, 'comparisons': 0, 'moves': 20000, 'peak_memory': 768496}
+{'algorithm': 'counting', 'dataset': 'flights_n010000_schedule.csv', 'median_time': 0.025615999940782785, 'comparisons': 0, 'moves': 20000, 'peak_memory': 760784}
+{'algorithm': 'counting', 'dataset': 'flights_n100000_nearly_sorted.csv', 'median_time': 0.25499219982884824, 'comparisons': 0, 'moves': 200000, 'peak_memory': 8037288}
+{'algorithm': 'counting', 'dataset': 'flights_n100000_schedule.csv', 'median_time': 0.2984318998642266, 'comparisons': 0, 'moves': 200000, 'peak_memory': 8058088}
+
+
+
+
+4. 64-bit timestamp would mean there are 264 possible key values if counting sort was used, which is about 1.8 * 1019. Instead, I would most likely use merge sort.
+
+Conclusions:
+ 	Instrumentation seriously slowed down everything by a magnitude of 10 at least. Counting sort performed exceptionally well (which is to be expected because the key range is quite small comparatively). Since the key range is known to be small, it is the fastest and most efficient algorithm to use in the case where certain characteristics of the data set is known beforehand.
+ 	In the case where key range is known to be quite large, merge sort or heap sort are better equipped to handle the dataset. Heap sort does take more memory and performed worse than merge, so merge is the all-around best choice of the four if the characteristics of the data set are unknown beforehand.
